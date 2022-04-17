@@ -91,7 +91,12 @@ RSpec.describe StatTracker do
 
   it 'has worst coach' do
     expect(@stat_tracker.worst_coach('20132014')).to eq ("Peter DeBoer")
-    expect(@stat_tracker.worst_coach('20142015')).to eq ("Craig MacTavish").or(eq("Ted Nolan"))
+    expect(@stat_tracker.worst_coach('20142015')).to eq ("Craig MacTavish").or(eq ("Ted Nolan"))
+  end
+
+  it 'has most_accurate_team' do
+    expect(@stat_tracker.most_accurate_team("20132014")).to eq ("Real Salt Lake")
+    expect(@stat_tracker.most_accurate_team("20142015")).to eq ("Toronto FC")
   end
 
 end
