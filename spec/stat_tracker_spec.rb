@@ -83,10 +83,10 @@ RSpec.describe StatTracker do
     expect(@stat_tracker.average_goals_by_season).to eq(expect)
   end
   # End Game Statistics methods
-  # Start Season Statistics methods 
+  # Start Season Statistics methods
   it 'has a winningest coach' do
-    expect(@stat_tracker.winningest_coach('20132014')).to eq ("Adam Oates")
-    expect(@stat_tracker.winningest_coach('20142015')).to eq ("Peter DeBoer")
+    expect(@stat_tracker.winningest_coach('20132014')).to eq ("Clause Julien")
+    expect(@stat_tracker.winningest_coach('20142015')).to eq ("Alain Vigneault")
   end
 
 
