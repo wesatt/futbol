@@ -1,5 +1,4 @@
-
-
+require 'pry'
 class GameTeams
   attr_reader :game_id,
               :team_id,
@@ -32,5 +31,12 @@ class GameTeams
     @faceoffwinpercentage = data[:faceoffwinpercentage]
     @giveaways = data[:giveaways]
     @takeaways = data[:takeaways]
+    @data = data
+  end
+
+  def hash_data
+    @data.map do |d|
+      d.to_hash
+    end
   end
 end
