@@ -90,7 +90,7 @@ class Games
     total_goals_by_season = Hash.new(0)
     season.each_with_index do |season_1, index|
       games_by_season[:count][season_1] += 1
-      total_goals_by_season[season_1] += (@data[:home_goals][index].to_i + @data[:away_goals][index].to_i)
+      total_goals_by_season[season_1] += (home_goals[index].to_i + away_goals[index].to_i)
     end
     games_by_season[:count].each do |season1, season_count|
       total_goals_by_season.each do |season2, total_score|

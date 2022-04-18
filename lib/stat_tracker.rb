@@ -303,13 +303,13 @@ class StatTracker
   end
 
   def winningest_coach(season_arg)
-    games_grouped_by_season = @game_teams.data.group_by do |game|
+    games_grouped_by_game_id = @game_teams.data.group_by do |game|
       game[:game_id]
     end
 
     list_of_games_by_season = []
     game_ids_by_season(season_arg).each do |game_id|
-      list_of_games_by_season << games_grouped_by_season[game_id]
+      list_of_games_by_season << games_grouped_by_game_id[game_id]
     end
 
     games_grouped_by_coach = list_of_games_by_season.flatten.group_by do |game|
@@ -356,6 +356,7 @@ class StatTracker
         team_data[game[:team_id]] = {goals: incrementer, total_games: 1}
       end
     end
+
     team_average_goals = Hash.new(0)
     team_data.each do |id_key, value_hash|
       @teams.team_id.each_with_index do |team_id, index|
