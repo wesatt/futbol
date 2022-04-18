@@ -1,5 +1,4 @@
-
-require 'pry'
+require "pry"
 
 class GameTeams
   attr_reader :data # ,
@@ -36,21 +35,25 @@ class GameTeams
     # @giveaways = data[:giveaways]
     # @takeaways = data[:takeaways]
     @data = data
-    @game_teams_rows = Hash.new
+    @game_teams_rows = {}
 
-    data.by_row!.each do |row|
-      team_hash = row.to_h
-      @game_teams_rows[team_hash[:team_id].to_i] = team_hash
-    end
+    # data.by_row!.each do |row|
+    #   team_hash = row.to_h
+    #   @game_teams_rows[team_hash[:team_id].to_i] = team_hash
+    # end
   end
-    
-    def game_id
+
+  def game_id
     @data.map { |row| row[:game_id] }
+  end
+
+  def head_coach
+    @data.map { |row| row[:head_coach] }
   end
 
   def gt_by_id(id)
     @game_teams_rows[id]
-    end
+  end
 
   def hash_data
     @data.map do |d|
@@ -59,8 +62,8 @@ class GameTeams
   end
 
   def goals_array(team_id)
-    max_goals = Hash.new
-    goals_by_id = Array.new
+    max_goals = {}
+    goals_by_id = []
     data.by_row!.each do |row|
       team_hash = row.to_h
       max_goals[team_hash[:team_id]] = goals_by_id
@@ -69,6 +72,4 @@ class GameTeams
       end
     end
   end
-
-
 end

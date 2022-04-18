@@ -7,17 +7,16 @@ require_relative "../lib/stat_tracker"
 require_relative "../lib/games"
 require_relative "../lib/teams"
 require_relative "../lib/game_teams"
-require "pry"
 
 RSpec.describe StatTracker do
   before :each do
-    # game_path = "./data/test_games.csv"
-    # team_path = "./data/test_teams.csv"
-    # game_teams_path = "./data/test_game_teams.csv"
+    game_path = "./data/test_games.csv"
+    team_path = "./data/test_teams.csv"
+    game_teams_path = "./data/test_game_teams.csv"
 
-    game_path = "./data/games.csv"
-    team_path = "./data/teams.csv"
-    game_teams_path = "./data/game_teams.csv"
+    # game_path = "./data/games.csv"
+    # team_path = "./data/teams.csv"
+    # game_teams_path = "./data/game_teams.csv"
 
     locations = {
       games: game_path,
@@ -28,58 +27,45 @@ RSpec.describe StatTracker do
     @stat_tracker = StatTracker.from_csv(locations)
   end
 
-  xit "exists" do
+  it "exists" do
     expect(@stat_tracker).to be_a StatTracker
   end
 
-  #start league statistics
-  it "#count_of_teams" do
+  # start league statistics
+  xit "#count_of_teams" do
     expect(@stat_tracker.count_of_teams).to eq 32
   end
 
   it "#best_offense" do
-    expect(@stat_tracker.best_offense).to eq "Reign FC"
+    expect(@stat_tracker.best_offense).to eq "DC United"
+    # expect(@stat_tracker.best_offense).to eq "Reign FC"
   end
 
-  it "#worst_offense" do
-    expect(@stat_tracker.worst_offense).to eq "Utah Royals FC"
+  xit "#worst_offense" do
+    expect(@stat_tracker.worst_offense).to eq "Seattle Sounders FC"
+    # expect(@stat_tracker.worst_offense).to eq "Utah Royals FC"
   end
 
-  it "#highest_scoring_visitor" do
-    expect(@stat_tracker.highest_scoring_visitor).to eq "FC Dallas"
+  xit "#highest_scoring_visitor" do
+    expect(@stat_tracker.highest_scoring_visitor).to eq "Real Salt Lake"
+    # expect(@stat_tracker.highest_scoring_visitor).to eq "FC Dallas"
   end
 
-
-  it "#highest_scoring_home_team" do
-    expect(@stat_tracker.highest_scoring_home_team).to eq "Reign FC"
+  xit "#highest_scoring_home_team" do
+    expect(@stat_tracker.highest_scoring_home_team).to eq "DC United"
+    # expect(@stat_tracker.highest_scoring_home_team).to eq "Reign FC"
   end
 
-  it "#lowest_scoring_visitor" do
-    expect(@stat_tracker.lowest_scoring_visitor).to eq "San Jose Earthquakes"
+  xit "#lowest_scoring_visitor" do
+    expect(@stat_tracker.lowest_scoring_visitor).to eq "Chicago Red Stars"
+    # expect(@stat_tracker.lowest_scoring_visitor).to eq "San Jose Earthquakes"
   end
 
-  it "#lowest_scoring_home_team" do
-    expect(@stat_tracker.lowest_scoring_home_team).to eq "Utah Royals FC"
+  xit "#lowest_scoring_home_team" do
+    expect(@stat_tracker.lowest_scoring_home_team).to eq "Seattle Sounders FC"
+    # expect(@stat_tracker.lowest_scoring_home_team).to eq "Utah Royals FC"
   end
-#end of league statistics
-
-
-  xit 'returns a hash for team info' do
-
-    expected = {team_id: "4", franchiseid: "16", teamname: "Chicago Fire", abbreviation: "CHI", stadium: "SeatGeek Stadium", link: "/api/v1/teams/4"}
-
-    expect(@stat_tracker.team_info(4)).to eq(expected)
-  end
-
-  xit 'shows the season with the highest win percentage for a team' do
-    #Need the win percentage method and be able to use the team_id
-
-    expect(@stat_tracker.best_season(30)).to eq("20122013")
-  end
-
-  it 'will show the highest score of a particular team' do
-    expect(@stat_tracker.most_goals_scored(16)).to eq(4)
-  end
+  # end of league statistics
 
   # Start Game Statistics methods
   xit "checks highest_total_score" do
@@ -124,34 +110,52 @@ RSpec.describe StatTracker do
   # End Game Statistics methods
 
   # Start Season Statistics methods
-  it 'has a winningest coach' do
-    expect(@stat_tracker.winningest_coach('20132014')).to eq ("Claude Julien")
-    expect(@stat_tracker.winningest_coach('20142015')).to eq ("Alain Vigneault")
-    # expect(@stat_tracker.winningest_coach('20132014')).to eq ("Adam Oates")
+  it "has a winningest coach" do
+    # expect(@stat_tracker.winningest_coach("20122013")).to eq("Adam Oates")
+    expect(@stat_tracker.winningest_coach("20132014")).to eq("Claude Julien")
+    expect(@stat_tracker.winningest_coach("20142015")).to eq("Alain Vigneault")
   end
 
-  it 'has worst coach' do
-    expect(@stat_tracker.worst_coach('20132014')).to eq ("Peter Laviolette")
-    expect(@stat_tracker.worst_coach('20142015')).to eq ("Craig MacTavish") | eq("Ted Nolan")
-    # expect(@stat_tracker.worst_coach('20132014')).to eq ("Peter DeBoer")
+  xit "has worst coach" do
+    expect(@stat_tracker.worst_coach("20132014")).to eq("Peter DeBoer")
+    # expect(@stat_tracker.worst_coach("20132014")).to eq("Peter Laviolette")
+    # expect(@stat_tracker.worst_coach("20142015")).to eq ("Craig MacTavish") | eq("Ted Nolan")
   end
 
-  it 'has most accurate team by season' do
-    expect(@stat_tracker.most_accurate_team("20132014")).to eq ("Real Salt Lake")
-    expect(@stat_tracker.most_accurate_team("20142015")).to eq ("Toronto FC")
-    # expect(@stat_tracker.most_accurate_team("20122013")).to eq ("Atlanta United")
+  xit "has most accurate team by season" do
+    expect(@stat_tracker.most_accurate_team("20122013")).to eq("Atlanta United")
+    # expect(@stat_tracker.most_accurate_team("20132014")).to eq("Real Salt Lake")
+    # expect(@stat_tracker.most_accurate_team("20142015")).to eq("Toronto FC")
   end
 
-  it 'has least accurate team by season' do
-    expect(@stat_tracker.least_accurate_team("20132014")).to eq ("New York City FC")
-    expect(@stat_tracker.least_accurate_team("20142015")).to eq ("Columbus Crew SC")
-    # expect(@stat_tracker.least_accurate_team("20122013")).to eq ("Seattle Sounders FC")
+  xit "has least accurate team by season" do
+    expect(@stat_tracker.least_accurate_team("20122013")).to eq("Seattle Sounders FC")
+    # expect(@stat_tracker.least_accurate_team("20132014")).to eq("New York City FC")
+    # expect(@stat_tracker.least_accurate_team("20142015")).to eq("Columbus Crew SC")
   end
 
-  it 'has most tackles in the season' do
-    expect(@stat_tracker.most_tackles("20132014")).to eq ("FC Cincinnati")
-    expect(@stat_tracker.most_tackles("20142015")).to eq ("Seattle Sounders FC")
+  xit "has most tackles in the season" do
+    expect(@stat_tracker.most_tackles("20132014")).to eq("FC Cincinnati")
+    expect(@stat_tracker.most_tackles("20142015")).to eq("Seattle Sounders FC")
     # expect(@stat_tracker.most_tackles("20142015")).to eq ()
   end
+  # end of season statistics methods
 
+  # Start Team methods
+  xit "returns a hash for team info" do
+    expected = {team_id: "4", franchiseid: "16", teamname: "Chicago Fire", abbreviation: "CHI", stadium: "SeatGeek Stadium", link: "/api/v1/teams/4"}
+
+    expect(@stat_tracker.team_info(4)).to eq(expected)
+  end
+
+  xit "shows the season with the highest win percentage for a team" do
+    # Need the win percentage method and be able to use the team_id
+
+    expect(@stat_tracker.best_season(30)).to eq("20122013")
+  end
+
+  xit "will show the highest score of a particular team" do
+    expect(@stat_tracker.most_goals_scored(16)).to eq(4)
+  end
+  # end Team methods
 end

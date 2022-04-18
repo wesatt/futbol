@@ -61,21 +61,21 @@ class Games
   end
 
   def total_scores
-    @away_goals.each_with_index.map do |score, index|
-      score.to_i + @home_goals[index].to_i
+    away_goals.each_with_index.map do |score, index|
+      score.to_i + home_goals[index].to_i
     end
   end
 
   def game_outcomes
     outcomes = Hash.new(0)
-    @away_goals.each_with_index do |score, index|
-      if score.to_i > @home_goals[index].to_i
+    away_goals.each_with_index do |score, index|
+      if score.to_i > home_goals[index].to_i
         outcomes[:away_win] += 1
         outcomes[:total] += 1
-      elsif score.to_i < @home_goals[index].to_i
+      elsif score.to_i < home_goals[index].to_i
         outcomes[:home_win] += 1
         outcomes[:total] += 1
-      elsif score.to_i == @home_goals[index].to_i
+      elsif score.to_i == home_goals[index].to_i
         outcomes[:tie] += 1
         outcomes[:total] += 1
       else
@@ -88,9 +88,9 @@ class Games
   def games_by_season_hash
     games_by_season = {count: Hash.new(0), average_goals: Hash.new(0)}
     total_goals_by_season = Hash.new(0)
-    @season.each_with_index do |season, index|
-      games_by_season[:count][season] += 1
-      total_goals_by_season[season] += (@data[:home_goals][index].to_i + @data[:away_goals][index].to_i)
+    season.each_with_index do |season_1, index|
+      games_by_season[:count][season_1] += 1
+      total_goals_by_season[season_1] += (home_goals[index].to_i + away_goals[index].to_i)
     end
     games_by_season[:count].each do |season1, season_count|
       total_goals_by_season.each do |season2, total_score|
@@ -101,12 +101,11 @@ class Games
     games_by_season
   end
 
-
-#   def season_win_by_team
-#     @by_teams.each do |team|
-# binding.pry
-#     end
-#   end
+  #   def season_win_by_team
+  #     @by_teams.each do |team|
+  # binding.pry
+  #     end
+  #   end
 
   # def self.create_list_of_game(games)
   #   games.map { |games| Games.new(games) }
