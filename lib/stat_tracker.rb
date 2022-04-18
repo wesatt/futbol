@@ -76,7 +76,6 @@ class StatTracker
 
     # adds losss and totals
     @games.season.each_with_index do |season, index|
-      binding.pry
       if season == season_arg
         if @games.away_goals[index].to_i > @games.home_goals[index].to_i
           team_id_for_season[@games.away_team_id[index]][:loss] += 1
@@ -141,6 +140,38 @@ class StatTracker
     accurate_team[0]
   end
 
+  def least_accurate_team(season_arg)
+    game_id_array = []
+    @games.season.each_with_index do |season, index|
+      if season == season_arg
+      game_id_array << @games.game_id[index]
+      end
+    end
+    team_goals_hash = Hash.new(0)
+    @game_teams.game_id.each_with_index do |game_id, index|
+      if game_id_array.include?(game_id)
+        if team_goals_hash[@game_teams.team_id[index]] != 0
+          team_goals_hash[@game_teams.team_id[index]][:goals] += @game_teams.goals[index].to_i
+          team_goals_hash[@game_teams.team_id[index]][:shots] += @game_teams.shots[index].to_i
+        else
+          team_goals_hash[@game_teams.team_id[index]] = Hash.new(0)
+        team_goals_hash[@game_teams.team_id[index]][:goals] = @game_teams.goals[index].to_i
+        team_goals_hash[@game_teams.team_id[index]][:shots] = @game_teams.shots[index].to_i
+        end
+      end
+    end
+    team_name_goals_ratio = Hash.new(0)
+    team_goals_hash.each do |team_id2, values|
+      @teams.team_id.each_with_index do |team_id1, index|
+        if team_id2 == team_id1
+          team_name_goals_ratio[@teams.teamname[index]] =
+           (team_goals_hash[team_id2][:goals].to_f / team_goals_hash[team_id2][:shots].to_f)
+        end
+      end
+    end
+    accurate_team = team_name_goals_ratio.min_by { |k, v| v }
+    accurate_team[0]
+  end
 
   def team_info(team_id)
     teams.by_id(team_id)
