@@ -28,7 +28,7 @@ RSpec.describe StatTracker do
     @stat_tracker = StatTracker.from_csv(locations)
   end
 
-  it "exists" do
+  xit "exists" do
     expect(@stat_tracker).to be_a StatTracker
   end
 
@@ -72,8 +72,12 @@ RSpec.describe StatTracker do
 
   xit 'shows the season with the highest win percentage for a team' do
     #Need the win percentage method and be able to use the team_id
-    #One is coming from game_teams.csv and one from teams.csv
-    expect(@stat_tracker.best_season(6)).to eq("20132014")
+
+    expect(@stat_tracker.best_season(30)).to eq("20122013")
+  end
+
+  it 'will show the highest score of a particular team' do
+    expect(@stat_tracker.most_goals_scored(16)).to eq(4)
   end
 
   # Start Game Statistics methods
@@ -118,6 +122,8 @@ RSpec.describe StatTracker do
   end
   # End Game Statistics methods
 
+
+
   # Start Season Statistics methods
   it 'has a winningest coach' do
     expect(@stat_tracker.winningest_coach('20132014')).to eq ("Claude Julien")
@@ -148,5 +154,6 @@ RSpec.describe StatTracker do
     expect(@stat_tracker.most_tackles("20142015")).to eq ("Seattle Sounders FC")
     # expect(@stat_tracker.most_tackles("20142015")).to eq ()
   end
+
 
 end

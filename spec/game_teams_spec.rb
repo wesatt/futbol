@@ -41,4 +41,5 @@ RSpec.describe GameTeams do
     expect(@stat_tracker.game_teams.giveaways).to eq(@stat_tracker.stats_main[:game_teams][:giveaways])
     expect(@stat_tracker.game_teams.takeaways).to eq(@stat_tracker.stats_main[:game_teams][:takeaways])
   end
+
 end

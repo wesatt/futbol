@@ -32,7 +32,4 @@ RSpec.describe Teams do
     expect(@stat_tracker.teams.link).to eq(@stat_tracker.stats_main[:teams][:link])
   end
 
-  it 'can sort the hashes by team_ids' do
-
-  end
 end
