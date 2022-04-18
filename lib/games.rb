@@ -1,26 +1,27 @@
 class Games
-  attr_reader :game_id,
-    :season,
-    :type,
-    :date_time,
-    :away_team_id,
-    :home_team_id,
-    :away_goals,
-    :home_goals,
-    :venue,
-    :venue_link
+  attr_reader :data # ,
+  # :game_id,
+  # :season,
+  # :type,
+  # :date_time,
+  # :away_team_id,
+  # :home_team_id,
+  # :away_goals,
+  # :home_goals,
+  # :venue,
+  # :venue_link
 
   def initialize(data)
-    @game_id = data[:game_id]
-    @season = data[:season]
-    @type = data[:type]
-    @date_time = data[:date_time]
-    @away_team_id = data[:away_team_id]
-    @home_team_id = data[:home_team_id]
-    @away_goals = data[:away_goals]
-    @home_goals = data[:home_goals]
-    @venue = data[:venue]
-    @venue_link = data[:venue_link]
+    # @game_id = data[:game_id]
+    # @season = data[:season]
+    # @type = data[:type]
+    # @date_time = data[:date_time]
+    # @away_team_id = data[:away_team_id]
+    # @home_team_id = data[:home_team_id]
+    # @away_goals = data[:away_goals]
+    # @home_goals = data[:home_goals]
+    # @venue = data[:venue]
+    # @venue_link = data[:venue_link]
     @data = data
 
     # @by_game_home = Hash.new
@@ -33,6 +34,30 @@ class Games
     #   game_away_hash = row.to_h
     #   @by_game_away[game_away_hash[:away_team_id]] = game_away_hash
     # end
+  end
+
+  def game_id
+    @data.map { |row| row[:game_id] }
+  end
+
+  def season
+    @data.map { |row| row[:season] }
+  end
+
+  def away_goals
+    @data.map { |row| row[:away_goals] }
+  end
+
+  def home_goals
+    @data.map { |row| row[:home_goals] }
+  end
+
+  def away_team_id
+    @data.map { |row| row[:away_team_id] }
+  end
+
+  def home_team_id
+    @data.map { |row| row[:home_team_id] }
   end
 
   def total_scores

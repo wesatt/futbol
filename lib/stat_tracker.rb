@@ -9,7 +9,6 @@ class StatTracker
 
   def initialize(stat_tracker)
     @games = Games.new(stat_tracker[:games])
-    # binding.pry
     @teams = Teams.new(stat_tracker[:teams])
     @game_teams = GameTeams.new(stat_tracker[:game_teams])
   end
@@ -17,15 +16,14 @@ class StatTracker
   def self.from_csv(locations)
     stats = {}
     locations.each do |file_key, location_value|
-      file = CSV.read(location_value, headers: true, header_converters: :symbol)
-      stats[file_key] = file
+      csv = CSV.read(location_value, headers: true, header_converters: :symbol)
+      stats[file_key] = csv.map { |row| row.to_h }
     end
     StatTracker.new(stats)
 
     # stat_tracker = StatTracker.new(locations)
     # stat_tracker.games = Game.create_list_of_game(stat_tracker.games_csv)
   end
-
   
   def team_info(team_id)
     teams.by_id(team_id)
@@ -112,47 +110,48 @@ class StatTracker
     #   max_goals[team_id].max.to_i
     end
 
+
     
-  def winningest_coach(season_arg)
-    coach_by_season = Hash.new(0)
-    team_id_for_season = Hash.new(0)
-    @teams.team_id.each do |team|
-      team_id_for_season[team] = {win: 0, total: 0}
-    end
+#   def winningest_coach(season_arg)
+#     coach_by_season = Hash.new(0)
+#     team_id_for_season = Hash.new(0)
+#     @teams.team_id.each do |team|
+#       team_id_for_season[team] = {win: 0, total: 0}
+#     end
     
-    # adds wins and totals
-    @games.season.each_with_index do |season, index|
-      if season == season_arg
-        if @games.away_goals[index].to_i > @games.home_goals[index].to_i
-          team_id_for_season[@games.away_team_id[index]][:win] += 1
-        elsif @games.away_goals[index].to_i < @games.home_goals[index].to_i
-          team_id_for_season[@games.home_team_id[index]][:win] += 1
-        end
-        team_id_for_season[@games.away_team_id[index]][:total] += 1
-        team_id_for_season[@games.home_team_id[index]][:total] += 1
-      end
-    end
+#     # adds wins and totals
+#     @games.season.each_with_index do |season, index|
+#       if season == season_arg
+#         if @games.away_goals[index].to_i > @games.home_goals[index].to_i
+#           team_id_for_season[@games.away_team_id[index]][:win] += 1
+#         elsif @games.away_goals[index].to_i < @games.home_goals[index].to_i
+#           team_id_for_season[@games.home_team_id[index]][:win] += 1
+#         end
+#         team_id_for_season[@games.away_team_id[index]][:total] += 1
+#         team_id_for_season[@games.home_team_id[index]][:total] += 1
+#       end
+#     end
 
-    # adds coach
-    team_id_for_season.each do |key_id, value_hash|
-      @game_teams.head_coach.each_with_index do |coach, index|
-        team_id_for_season[@game_teams.team_id[index]][:coach] = coach
-      end
-    end
+#     # adds coach
+#     team_id_for_season.each do |key_id, value_hash|
+#       @game_teams.head_coach.each_with_index do |coach, index|
+#         team_id_for_season[@game_teams.team_id[index]][:coach] = coach
+#       end
+#     end
 
-    # makes hash of coaches and wins
-    team_id_for_season.each do |key_id, value_hash|
-      percentage = (value_hash[:win].to_f / value_hash[:total].to_f)
-      coach_by_season[value_hash[:coach]] = if percentage > 0
-        percentage
-      else
-        0
-      end
-    end
+#     # makes hash of coaches and wins
+#     team_id_for_season.each do |key_id, value_hash|
+#       percentage = (value_hash[:win].to_f / value_hash[:total].to_f)
+#       coach_by_season[value_hash[:coach]] = if percentage > 0
+#         percentage
+#       else
+#         0
+#       end
+#     end
 
-    best_coach = coach_by_season.max_by { |k, v| v }
-    best_coach[0]
-  end
+#     best_coach = coach_by_season.max_by { |k, v| v }
+#     best_coach[0]
+#   end
 
   def worst_coach(season_arg)
     coach_by_season = Hash.new(0)
@@ -299,6 +298,51 @@ class StatTracker
   end
   # End Game Statistics methods
 
+  def game_ids_by_season(season_id)
+    game_id_array = []
+    @games.season.each_with_index do |season, index|
+      if season == season_id
+        game_id_array << @games.game_id[index]
+      end
+    end
+    game_id_array
+  end
+
+  def winningest_coach(season_arg)
+    games_grouped_by_season = @game_teams.data.group_by do |game|
+      game[:game_id]
+    end
+
+    list_of_games_by_season = []
+    game_ids_by_season(season_arg).each do |game_id|
+      list_of_games_by_season << games_grouped_by_season[game_id]
+    end
+
+    games_grouped_by_coach = list_of_games_by_season.flatten.group_by do |game|
+      game[:head_coach]
+    end
+
+    coach_wins = Hash.new(0)
+    games_grouped_by_coach.each do |coach, coach_game_array|
+      coach_wins[coach] = {win: 0, total: 0}
+      coach_game_array.each do |game|
+        if game[:result] == "WIN"
+          coach_wins[coach][:win] += 1
+        end
+        coach_wins[coach][:total] += 1
+      end
+    end
+
+    best_coach = coach_wins.max_by do |key, value|
+      (value[:win].to_f / value[:total].to_f)
+    end
+
+    worst_coach = coach_wins.min_by do |key, value|
+      (value[:win].to_f / value[:total].to_f)
+    end
+
+    best_coach[0]
+  end
 
   #league statistics methods
   def count_of_teams
@@ -462,11 +506,6 @@ class StatTracker
     best_team = team_average_goals.min_by { |k, v| v }
     best_team[0]
   end
-
-  # Start Season Statistics methods
-
-
-
   # End Season Statistics methods
 end
 

@@ -7,7 +7,7 @@ require_relative "../lib/stat_tracker"
 require_relative "../lib/games"
 require_relative "../lib/teams"
 require_relative "../lib/game_teams"
-require 'pry'
+require "pry"
 
 RSpec.describe StatTracker do
   before :each do
@@ -65,6 +65,7 @@ RSpec.describe StatTracker do
 
 
   xit 'returns a hash for team info' do
+
     expected = {team_id: "4", franchiseid: "16", teamname: "Chicago Fire", abbreviation: "CHI", stadium: "SeatGeek Stadium", link: "/api/v1/teams/4"}
 
     expect(@stat_tracker.team_info(4)).to eq(expected)
@@ -122,8 +123,6 @@ RSpec.describe StatTracker do
   end
   # End Game Statistics methods
 
-
-
   # Start Season Statistics methods
   it 'has a winningest coach' do
     expect(@stat_tracker.winningest_coach('20132014')).to eq ("Claude Julien")
@@ -154,6 +153,5 @@ RSpec.describe StatTracker do
     expect(@stat_tracker.most_tackles("20142015")).to eq ("Seattle Sounders FC")
     # expect(@stat_tracker.most_tackles("20142015")).to eq ()
   end
-
 
 end
