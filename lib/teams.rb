@@ -1,3 +1,4 @@
+require 'pry'
 class Teams
   attr_reader :team_id,
               :franchiseid,
@@ -14,6 +15,7 @@ class Teams
     @stadium = data[:stadium]
     @link = data[:link]
     @teams = Hash.new
+    @data = data
 
     data.by_row!.each do |row|
       team_hash = row.to_h
@@ -25,5 +27,9 @@ class Teams
     @teams[id]
   end
 
-
+  def hash_data
+    @data.map do |d|
+      d.to_hash
+    end
+  end
 end

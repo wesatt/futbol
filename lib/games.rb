@@ -76,9 +76,20 @@ class Games
     games_by_season
   end
 
+
 #   def season_win_by_team
 #     @by_teams.each do |team|
 # binding.pry
 #     end
 #   end
+
+  # def self.create_list_of_game(games)
+  #   games.map { |games| Games.new(games) }
+  # end
+
+  def hash_data
+    @data.map do |d|
+      d.to_hash
+    end
+  end
 end
