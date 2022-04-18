@@ -1,4 +1,4 @@
-require 'pry'
+require "pry"
 class Teams
   attr_reader :data # ,
   # :team_id,
@@ -9,7 +9,6 @@ class Teams
   # :link
 
   def initialize(data)
-
     # @team_id = data[:team_id]
     # @franchiseid = data[:franchiseid]
     # @teamname = data[:teamname]
@@ -30,6 +29,10 @@ class Teams
     @data.map { |row| row[:team_id] }
   end
 
+  def teamname
+    @data.map { |row| row[:teamname] }
+  end
+
   def by_id(id)
     @teams[id]
   end
@@ -39,5 +42,4 @@ class Teams
       d.to_hash
     end
   end
-
 end
