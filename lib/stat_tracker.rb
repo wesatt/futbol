@@ -8,7 +8,6 @@ class StatTracker
 
   def initialize(stat_tracker)
     @games = Games.new(stat_tracker[:games])
-    # binding.pry
     @teams = Teams.new(stat_tracker[:teams])
     @game_teams = GameTeams.new(stat_tracker[:game_teams])
   end
@@ -16,18 +15,17 @@ class StatTracker
   def self.from_csv(locations)
     stats = {}
     locations.each do |file_key, location_value|
-      file = CSV.read(location_value, headers: true, header_converters: :symbol)
-      stats[file_key] = file
+      csv = CSV.read(location_value, headers: true, header_converters: :symbol)
+      stats[file_key] = csv.map { |row| row.to_h }
     end
     StatTracker.new(stats)
     # stat_tracker = StatTracker.new(locations)
     # stat_tracker.games = Game.create_list_of_game(stat_tracker.games_csv)
   end
 
-
-    def team_info(team_id)
-      teams.by_id(team_id)
-    end
+  def team_info(team_id)
+    teams.by_id(team_id)
+  end
 
   # Start Game Statistics methods
   def highest_total_score
@@ -62,4 +60,50 @@ class StatTracker
     @games.games_by_season_hash[:average_goals]
   end
   # End Game Statistics methods
+
+  def game_ids_by_season(season_id)
+    game_id_array = []
+    @games.season.each_with_index do |season, index|
+      if season == season_id
+        game_id_array << @games.game_id[index]
+      end
+    end
+    game_id_array
+  end
+
+  def winningest_coach(season_arg)
+    games_grouped_by_season = @game_teams.data.group_by do |game|
+      game[:game_id]
+    end
+
+    list_of_games_by_season = []
+    game_ids_by_season(season_arg).each do |game_id|
+      list_of_games_by_season << games_grouped_by_season[game_id]
+    end
+
+    games_grouped_by_coach = list_of_games_by_season.flatten.group_by do |game|
+      game[:head_coach]
+    end
+
+    coach_wins = Hash.new(0)
+    games_grouped_by_coach.each do |coach, coach_game_array|
+      coach_wins[coach] = {win: 0, total: 0}
+      coach_game_array.each do |game|
+        if game[:result] == "WIN"
+          coach_wins[coach][:win] += 1
+        end
+        coach_wins[coach][:total] += 1
+      end
+    end
+
+    best_coach = coach_wins.max_by do |key, value|
+      (value[:win].to_f / value[:total].to_f)
+    end
+
+    worst_coach = coach_wins.min_by do |key, value|
+      (value[:win].to_f / value[:total].to_f)
+    end
+
+    best_coach[0]
+  end
 end
