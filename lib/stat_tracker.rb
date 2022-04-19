@@ -259,6 +259,21 @@ class StatTracker
     teams.by_id(team_id)
   end
 
+  def average_win_percentage(team_id)
+    team_win_total = Hash.new(0)
+    team_win_total[team_id] = {win: 0, total: 0}
+    @game_teams.data.each do |game|
+      if game[:team_id].to_i == team_id
+        if game[:result] == "WIN"
+          team_win_total[team_id][:win] += 1
+        end
+        team_win_total[team_id][:total] += 1
+      end
+    end
+    # binding.pry
+    (team_win_total[team_id][:win].to_f / team_win_total[team_id][:total].to_f).round(2)
+  end
+
   # Start Game Statistics methods
   def highest_total_score
     @games.total_scores.max

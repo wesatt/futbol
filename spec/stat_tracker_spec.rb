@@ -142,7 +142,7 @@ RSpec.describe StatTracker do
   # end of season statistics methods
 
   # Start Team methods
-  xit "returns a hash for team info" do
+  it "returns a hash for team info" do
     expected = {team_id: "4", franchiseid: "16", teamname: "Chicago Fire", abbreviation: "CHI", stadium: "SeatGeek Stadium", link: "/api/v1/teams/4"}
 
     expect(@stat_tracker.team_info(4)).to eq(expected)
