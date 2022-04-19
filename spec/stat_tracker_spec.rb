@@ -143,9 +143,15 @@ RSpec.describe StatTracker do
 
   # Start Team methods
   it "returns a hash for team info" do
-    expected = {team_id: "4", franchiseid: "16", teamname: "Chicago Fire", abbreviation: "CHI", stadium: "SeatGeek Stadium", link: "/api/v1/teams/4"}
+    expected = {
+      "team_id" => "18",
+      "franchise_id" => "34",
+      "team_name" => "Minnesota United FC",
+      "abbreviation" => "MIN",
+      "link" => "/api/v1/teams/18"
+    }
 
-    expect(@stat_tracker.team_info(4)).to eq(expected)
+    expect(@stat_tracker.team_info("18")).to eq(expected)
   end
 
   xit "shows the season with the highest win percentage for a team" do
@@ -154,7 +160,7 @@ RSpec.describe StatTracker do
     expect(@stat_tracker.best_season(30)).to eq("20122013")
   end
 
-  xit "will show the highest score of a particular team" do
+  xit "will show the highest score of a particular team has scored in a game" do
     expect(@stat_tracker.most_goals_scored(16)).to eq(4)
   end
 

@@ -256,7 +256,18 @@ class StatTracker
   end
 
   def team_info(team_id)
-    teams.by_id(team_id)
+    teams_by_group = @teams.data.group_by do |team|
+      team[:team_id]
+    end
+    team = teams_by_group[team_id]
+    team[0].delete(:stadium)
+    team[0]["team_id"] = team[0].delete(:team_id)
+    team[0]["franchise_id"] = team[0].delete(:franchiseid)
+    team[0]["team_name"] = team[0].delete(:teamname)
+    team[0]["abbreviation"] = team[0].delete(:abbreviation)
+    team[0]["link"] = team[0].delete(:link)
+    # binding.pry
+    team[0]
   end
 
   def average_win_percentage(team_id)
@@ -270,9 +281,10 @@ class StatTracker
         team_win_total[team_id][:total] += 1
       end
     end
-    # binding.pry
     (team_win_total[team_id][:win].to_f / team_win_total[team_id][:total].to_f).round(2)
   end
+
+  
 
   # Start Game Statistics methods
   def highest_total_score
