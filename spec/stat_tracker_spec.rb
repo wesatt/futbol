@@ -110,7 +110,7 @@ RSpec.describe StatTracker do
   # End Game Statistics methods
 
   # Start Season Statistics methods
-  it "has a winningest coach" do
+  xit "has a winningest coach" do
     # expect(@stat_tracker.winningest_coach("20122013")).to eq("Adam Oates")
     expect(@stat_tracker.winningest_coach("20132014")).to eq("Claude Julien")
     expect(@stat_tracker.winningest_coach("20142015")).to eq("Alain Vigneault")
@@ -156,6 +156,10 @@ RSpec.describe StatTracker do
 
   xit "will show the highest score of a particular team" do
     expect(@stat_tracker.most_goals_scored(16)).to eq(4)
+  end
+
+  it 'will show a teams average win percentage of all games' do
+    expect(@stat_tracker.average_win_percentage(5)).to eq(0.33)
   end
   # end Team methods
 end
