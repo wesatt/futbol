@@ -1,39 +1,8 @@
 class Games
-  attr_reader :data # ,
-  # :game_id,
-  # :season,
-  # :type,
-  # :date_time,
-  # :away_team_id,
-  # :home_team_id,
-  # :away_goals,
-  # :home_goals,
-  # :venue,
-  # :venue_link
+  attr_reader :data
 
   def initialize(data)
-    # @game_id = data[:game_id]
-    # @season = data[:season]
-    # @type = data[:type]
-    # @date_time = data[:date_time]
-    # @away_team_id = data[:away_team_id]
-    # @home_team_id = data[:home_team_id]
-    # @away_goals = data[:away_goals]
-    # @home_goals = data[:home_goals]
-    # @venue = data[:venue]
-    # @venue_link = data[:venue_link]
     @data = data
-
-    # @by_game_home = Hash.new
-    # data.by_row!.each do |row|
-    #   game_home_hash = row.to_h
-    #   @by_game_home[game_home_hash[:home_team_id]] = game_home_hash
-    # end
-    # @by_game_away = Hash.new
-    # data.by_row!.each do |row|
-    #   game_away_hash = row.to_h
-    #   @by_game_away[game_away_hash[:away_team_id]] = game_away_hash
-    # end
   end
 
   def game_id
@@ -99,21 +68,5 @@ class Games
       end
     end
     games_by_season
-  end
-
-  #   def season_win_by_team
-  #     @by_teams.each do |team|
-  # binding.pry
-  #     end
-  #   end
-
-  # def self.create_list_of_game(games)
-  #   games.map { |games| Games.new(games) }
-  # end
-
-  def hash_data
-    @data.map do |d|
-      d.to_hash
-    end
   end
 end

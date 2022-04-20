@@ -5,7 +5,7 @@ require_relative "./games"
 require_relative "./teams"
 
 class StatTracker
-  attr_reader :teams, :game_teams, :games, :teams_csv
+  attr_reader :teams, :game_teams, :games
 
   def initialize(stat_tracker)
     @games = Games.new(stat_tracker[:games])
@@ -20,255 +20,7 @@ class StatTracker
       stats[file_key] = csv.map { |row| row.to_h }
     end
     StatTracker.new(stats)
-
-    # stat_tracker = StatTracker.new(locations)
-    # stat_tracker.games = Game.create_list_of_game(stat_tracker.games_csv)
   end
-
-  def team_info(team_id)
-    teams.by_id(team_id)
-  end
-
-  def best_season(team_id_number)
-    # creates hash with team ids as keys and an empty hash as the value
-    team_id_hash = Hash.new(0)
-    win_percentage_hash = Hash.new(0)
-    @teams.team_id.each do |team|
-      team_id_hash[team] = Hash.new(0)
-      win_percentage_hash[team] = Hash.new(0)
-    end
-
-    # for each team id in team_id_hash creates a hash with seasons as keys and the value is a hash with win/lose/tie/total keys
-    @games.season.each_with_index do |season, index|
-      team_id_hash.each do |key, value|
-        if @games.away_team_id[index] == key
-          team_id_hash[@games.away_team_id[index]][season] = {win: 0, lose: 0, tie: 0, total: 0}
-        elsif @games.home_team_id[index] == key
-          team_id_hash[@games.home_team_id[index]][season] = {win: 0, lose: 0, tie: 0, total: 0}
-        end
-      end
-    end
-
-    # adds win/lose/tie/total to each season
-    @games.away_goals.each_with_index do |score, index|
-      if score.to_i > @games.home_goals[index].to_i
-        team_id_hash[@games.away_team_id[index]][@games.season[index]][:win] += 1
-        team_id_hash[@games.home_team_id[index]][@games.season[index]][:lose] += 1
-      elsif score.to_i < @games.home_goals[index].to_i
-        team_id_hash[@games.home_team_id[index]][@games.season[index]][:win] += 1
-        team_id_hash[@games.away_team_id[index]][@games.season[index]][:lose] += 1
-      elsif score.to_i == @games.home_goals[index].to_i
-        team_id_hash[@games.home_team_id[index]][@games.season[index]][:tie] += 1
-        team_id_hash[@games.away_team_id[index]][@games.season[index]][:tie] += 1
-      end
-      team_id_hash[@games.away_team_id[index]][@games.season[index]][:total] += 1
-      team_id_hash[@games.home_team_id[index]][@games.season[index]][:total] += 1
-    end
-
-    # adds win percentage based on win/total
-    team_id_hash.each do |team_id_key, season_hash_values|
-      season_hash_values.each do |season_key, hash_values|
-        win_percentage = (hash_values[:win].to_f / hash_values[:total].to_f).round(2)
-        hash_values[:win_percentage] = win_percentage
-      end
-    end
-
-    # creates a hash of team id with a hash of season => win_percentage key/value pairs
-    team_id_hash.each do |id_key, season_value|
-      season_value.each do |season, values|
-        win_percentage_hash[id_key][season] = values[:win_percentage]
-      end
-    end
-
-    # returns the highest winning percent season
-    best = win_percentage_hash[team_id_number.to_s].max_by { |k, v| v }
-    best[0]
-  end
-
-  def most_goals_scored(team_id)
-    game_goals = Array.new
-    @game_teams.data.each do |game|
-      if game[:team_id] == team_id
-        game_goals << game[:goals]
-      end
-    end
-    # binding.pry
-    game_goals.max.to_i
-  end
-
-  def fewest_goals_scored(team_id)
-    game_goals = Array.new
-    @game_teams.data.each do |game|
-      if game[:team_id] == team_id
-        game_goals << game[:goals]
-      end
-    end
-    # binding.pry
-    game_goals.min.to_i
-  end
-
-
-  def favorite_opponent(team_id)
-    goals_by_teams = Hash.new(0)
-    @teams.data.each do |team|
-      goals_by_teams[team[:team_id]] = {win: 0, total: 0, name: team[:teamname]} if
-      team[:team_id] != team_id
-    end
-    games_for_team_id = Array.new
-    @games.data.each do |game|
-      if (game[:home_team_id] || game[:away_team_id]) == team_id
-        games_for_team_id << game[:game_id]
-      end
-    end
-    games_for_team_id.each do |expected|
-
-      @game_teams.data.each do |game|
-        if (game[:game_id] == expected) && (game[:team_id] != team_id)
-          if game[:result] == "WIN"
-            goals_by_teams[game[:team_id]][:win] += 1
-          end
-          goals_by_teams[game[:team_id]][:total] += 1
-        end
-      end
-    end
-    goals_by_teams.each do |team, hash|
-      hash[:percentage] = (hash[:win].to_f/hash[:total].to_f)
-    end
-    fav_opponent = goals_by_teams.min_by do |team, hash|
-      hash[:percentage]
-    end
-    fav_opponent[1][:name]
-  end
-
-  def rival(team_id)
-    goals_by_teams = Hash.new(0)
-    @teams.data.each do |team|
-      goals_by_teams[team[:team_id]] = {win: 0, total: 0, name: team[:teamname]} if
-      team[:team_id] != team_id
-    end
-    games_for_team_id = Array.new
-    @games.data.each do |game|
-      if (game[:home_team_id] || game[:away_team_id]) == team_id
-        games_for_team_id << game[:game_id]
-      end
-    end
-    games_for_team_id.each do |expected|
-
-      @game_teams.data.each do |game|
-        if (game[:game_id] == expected) && (game[:team_id] != team_id)
-          if game[:result] == "WIN"
-            goals_by_teams[game[:team_id]][:win] += 1
-          end
-          goals_by_teams[game[:team_id]][:total] += 1
-        end
-      end
-    end
-    goals_by_teams.each do |team, hash|
-      hash[:percentage] = (hash[:win].to_f/hash[:total].to_f)
-    end
-    rival_opponent = goals_by_teams.max_by do |team, hash|
-      hash[:percentage]
-    end
-    rival_opponent[1][:name]
-  end
-  
-
-  def most_accurate_team(season_arg)
-    game_id_array = []
-    @games.season.each_with_index do |season, index|
-      if season == season_arg
-        game_id_array << @games.game_id[index]
-      end
-    end
-    team_goals_hash = Hash.new(0)
-    @game_teams.game_id.each_with_index do |game_id, index|
-      if game_id_array.include?(game_id)
-        if team_goals_hash[@game_teams.team_id[index]] != 0
-          team_goals_hash[@game_teams.team_id[index]][:goals] += @game_teams.goals[index].to_i
-          team_goals_hash[@game_teams.team_id[index]][:shots] += @game_teams.shots[index].to_i
-        else
-          team_goals_hash[@game_teams.team_id[index]] = Hash.new(0)
-          team_goals_hash[@game_teams.team_id[index]][:goals] = @game_teams.goals[index].to_i
-          team_goals_hash[@game_teams.team_id[index]][:shots] = @game_teams.shots[index].to_i
-        end
-      end
-    end
-    team_name_goals_ratio = Hash.new(0)
-    team_goals_hash.each do |team_id2, values|
-      @teams.team_id.each_with_index do |team_id1, index|
-        if team_id2 == team_id1
-          team_name_goals_ratio[@teams.teamname[index]] =
-            (team_goals_hash[team_id2][:goals].to_f / team_goals_hash[team_id2][:shots].to_f)
-        end
-      end
-    end
-    accurate_team = team_name_goals_ratio.max_by { |k, v| v }
-    accurate_team[0]
-  end
-
-  def least_accurate_team(season_arg)
-    game_id_array = []
-    @games.season.each_with_index do |season, index|
-      if season == season_arg
-        game_id_array << @games.game_id[index]
-      end
-    end
-    team_goals_hash = Hash.new(0)
-    @game_teams.game_id.each_with_index do |game_id, index|
-      if game_id_array.include?(game_id)
-        if team_goals_hash[@game_teams.team_id[index]] != 0
-          team_goals_hash[@game_teams.team_id[index]][:goals] += @game_teams.goals[index].to_i
-          team_goals_hash[@game_teams.team_id[index]][:shots] += @game_teams.shots[index].to_i
-        else
-          team_goals_hash[@game_teams.team_id[index]] = Hash.new(0)
-          team_goals_hash[@game_teams.team_id[index]][:goals] = @game_teams.goals[index].to_i
-          team_goals_hash[@game_teams.team_id[index]][:shots] = @game_teams.shots[index].to_i
-        end
-      end
-    end
-    team_name_goals_ratio = Hash.new(0)
-    team_goals_hash.each do |team_id2, values|
-      @teams.team_id.each_with_index do |team_id1, index|
-        if team_id2 == team_id1
-          team_name_goals_ratio[@teams.teamname[index]] =
-            (team_goals_hash[team_id2][:goals].to_f / team_goals_hash[team_id2][:shots].to_f)
-        end
-      end
-    end
-    accurate_team = team_name_goals_ratio.min_by { |k, v| v }
-    accurate_team[0]
-  end
-
-  def team_info(team_id)
-    teams_by_group = @teams.data.group_by do |team|
-      team[:team_id]
-    end
-    team = teams_by_group[team_id]
-    team[0].delete(:stadium)
-    team[0]["team_id"] = team[0].delete(:team_id)
-    team[0]["franchise_id"] = team[0].delete(:franchiseid)
-    team[0]["team_name"] = team[0].delete(:teamname)
-    team[0]["abbreviation"] = team[0].delete(:abbreviation)
-    team[0]["link"] = team[0].delete(:link)
-    # binding.pry
-    team[0]
-  end
-
-  def average_win_percentage(team_id)
-    team_win_total = Hash.new(0)
-    team_win_total[team_id] = {win: 0, total: 0}
-    @game_teams.data.each do |game|
-      if game[:team_id].to_i == team_id
-        if game[:result] == "WIN"
-          team_win_total[team_id][:win] += 1
-        end
-        team_win_total[team_id][:total] += 1
-      end
-    end
-    (team_win_total[team_id][:win].to_f / team_win_total[team_id][:total].to_f).round(2)
-  end
-
-
 
   # Start Game Statistics methods
   def highest_total_score
@@ -304,79 +56,7 @@ class StatTracker
   end
   # End Game Statistics methods
 
-  def game_ids_by_season(season_id)
-    game_id_array = []
-    @games.season.each_with_index do |season, index|
-      if season == season_id
-        game_id_array << @games.game_id[index]
-      end
-    end
-    game_id_array
-  end
-
-  def winningest_coach(season_arg)
-    games_grouped_by_game_id = @game_teams.data.group_by do |game|
-      game[:game_id]
-    end
-
-    list_of_games_by_season = []
-    game_ids_by_season(season_arg).each do |game_id|
-      list_of_games_by_season << games_grouped_by_game_id[game_id]
-    end
-
-    games_grouped_by_coach = list_of_games_by_season.flatten.group_by do |game|
-      game[:head_coach]
-    end
-
-    coach_wins = Hash.new(0)
-    games_grouped_by_coach.each do |coach, coach_game_array|
-      coach_wins[coach] = {win: 0, total: 0}
-      coach_game_array.each do |game|
-        if game[:result] == "WIN"
-          coach_wins[coach][:win] += 1
-        end
-        coach_wins[coach][:total] += 1
-      end
-    end
-
-    best_coach = coach_wins.max_by do |key, value|
-      (value[:win].to_f / value[:total].to_f)
-    end
-    best_coach[0]
-  end
-
-  def worst_coach(season_arg)
-    games_grouped_by_game_id = @game_teams.data.group_by do |game|
-      game[:game_id]
-    end
-
-    list_of_games_by_season = []
-    game_ids_by_season(season_arg).each do |game_id|
-      list_of_games_by_season << games_grouped_by_game_id[game_id]
-    end
-
-    games_grouped_by_coach = list_of_games_by_season.flatten.group_by do |game|
-      game[:head_coach]
-    end
-
-    coach_wins = Hash.new(0)
-    games_grouped_by_coach.each do |coach, coach_game_array|
-      coach_wins[coach] = {win: 0, total: 0}
-      coach_game_array.each do |game|
-        if game[:result] == "WIN"
-          coach_wins[coach][:win] += 1
-        end
-        coach_wins[coach][:total] += 1
-      end
-    end
-
-    worst_coach = coach_wins.min_by do |key, value|
-      (value[:win].to_f / value[:total].to_f)
-    end
-    worst_coach[0]
-  end
-
-  # league statistics methods
+  # Start League Statistics methods
   def count_of_teams
     @teams.hash_data.length
   end
@@ -539,6 +219,128 @@ class StatTracker
     best_team = team_average_goals.min_by { |k, v| v }
     best_team[0]
   end
+  # End League Statistics methods
+
+  # Start Season Statistics methods
+  def winningest_coach(season_arg)
+    games_grouped_by_game_id = @game_teams.data.group_by do |game|
+      game[:game_id]
+    end
+    list_of_games_by_season = []
+    game_ids_by_season(season_arg).each do |game_id|
+      list_of_games_by_season << games_grouped_by_game_id[game_id]
+    end
+    games_grouped_by_coach = list_of_games_by_season.flatten.group_by do |game|
+      game[:head_coach]
+    end
+    coach_wins = Hash.new(0)
+    games_grouped_by_coach.each do |coach, coach_game_array|
+      coach_wins[coach] = {win: 0, total: 0}
+      coach_game_array.each do |game|
+        if game[:result] == "WIN"
+          coach_wins[coach][:win] += 1
+        end
+        coach_wins[coach][:total] += 1
+      end
+    end
+    best_coach = coach_wins.max_by do |key, value|
+      (value[:win].to_f / value[:total].to_f)
+    end
+    best_coach[0]
+  end
+
+  def worst_coach(season_arg)
+    games_grouped_by_game_id = @game_teams.data.group_by do |game|
+      game[:game_id]
+    end
+    list_of_games_by_season = []
+    game_ids_by_season(season_arg).each do |game_id|
+      list_of_games_by_season << games_grouped_by_game_id[game_id]
+    end
+    games_grouped_by_coach = list_of_games_by_season.flatten.group_by do |game|
+      game[:head_coach]
+    end
+    coach_wins = Hash.new(0)
+    games_grouped_by_coach.each do |coach, coach_game_array|
+      coach_wins[coach] = {win: 0, total: 0}
+      coach_game_array.each do |game|
+        if game[:result] == "WIN"
+          coach_wins[coach][:win] += 1
+        end
+        coach_wins[coach][:total] += 1
+      end
+    end
+    worst_coach = coach_wins.min_by do |key, value|
+      (value[:win].to_f / value[:total].to_f)
+    end
+    worst_coach[0]
+  end
+
+  def most_accurate_team(season_arg)
+    game_id_array = []
+    @games.season.each_with_index do |season, index|
+      if season == season_arg
+        game_id_array << @games.game_id[index]
+      end
+    end
+    team_goals_hash = Hash.new(0)
+    @game_teams.game_id.each_with_index do |game_id, index|
+      if game_id_array.include?(game_id)
+        if team_goals_hash[@game_teams.team_id[index]] != 0
+          team_goals_hash[@game_teams.team_id[index]][:goals] += @game_teams.goals[index].to_i
+          team_goals_hash[@game_teams.team_id[index]][:shots] += @game_teams.shots[index].to_i
+        else
+          team_goals_hash[@game_teams.team_id[index]] = Hash.new(0)
+          team_goals_hash[@game_teams.team_id[index]][:goals] = @game_teams.goals[index].to_i
+          team_goals_hash[@game_teams.team_id[index]][:shots] = @game_teams.shots[index].to_i
+        end
+      end
+    end
+    team_name_goals_ratio = Hash.new(0)
+    team_goals_hash.each do |team_id2, values|
+      @teams.team_id.each_with_index do |team_id1, index|
+        if team_id2 == team_id1
+          team_name_goals_ratio[@teams.teamname[index]] =
+            (team_goals_hash[team_id2][:goals].to_f / team_goals_hash[team_id2][:shots].to_f)
+        end
+      end
+    end
+    accurate_team = team_name_goals_ratio.max_by { |k, v| v }
+    accurate_team[0]
+  end
+
+  def least_accurate_team(season_arg)
+    game_id_array = []
+    @games.season.each_with_index do |season, index|
+      if season == season_arg
+        game_id_array << @games.game_id[index]
+      end
+    end
+    team_goals_hash = Hash.new(0)
+    @game_teams.game_id.each_with_index do |game_id, index|
+      if game_id_array.include?(game_id)
+        if team_goals_hash[@game_teams.team_id[index]] != 0
+          team_goals_hash[@game_teams.team_id[index]][:goals] += @game_teams.goals[index].to_i
+          team_goals_hash[@game_teams.team_id[index]][:shots] += @game_teams.shots[index].to_i
+        else
+          team_goals_hash[@game_teams.team_id[index]] = Hash.new(0)
+          team_goals_hash[@game_teams.team_id[index]][:goals] = @game_teams.goals[index].to_i
+          team_goals_hash[@game_teams.team_id[index]][:shots] = @game_teams.shots[index].to_i
+        end
+      end
+    end
+    team_name_goals_ratio = Hash.new(0)
+    team_goals_hash.each do |team_id2, values|
+      @teams.team_id.each_with_index do |team_id1, index|
+        if team_id2 == team_id1
+          team_name_goals_ratio[@teams.teamname[index]] =
+            (team_goals_hash[team_id2][:goals].to_f / team_goals_hash[team_id2][:shots].to_f)
+        end
+      end
+    end
+    accurate_team = team_name_goals_ratio.min_by { |k, v| v }
+    accurate_team[0]
+  end
 
   def most_tackles(season_id)
     games_grouped_by_game_id = @game_teams.data.group_by do |game|
@@ -563,7 +365,7 @@ class StatTracker
     most_tackles[0]
   end
 
-  def least_tackles(season_id)
+  def fewest_tackles(season_id)
     games_grouped_by_game_id = @game_teams.data.group_by do |game|
       game[:game_id]
     end
@@ -586,4 +388,244 @@ class StatTracker
     least_tackles[0]
   end
   # End Season Statistics methods
+
+  # Start Team Statistics methods
+  def team_info(team_id)
+    teams_by_group = @teams.data.group_by do |team|
+      team[:team_id]
+    end
+    team = teams_by_group[team_id]
+    team[0].delete(:stadium)
+    team[0]["team_id"] = team[0].delete(:team_id)
+    team[0]["franchise_id"] = team[0].delete(:franchiseid)
+    team[0]["team_name"] = team[0].delete(:teamname)
+    team[0]["abbreviation"] = team[0].delete(:abbreviation)
+    team[0]["link"] = team[0].delete(:link)
+    team[0]
+  end
+
+  def best_season(team_id_number)
+    away = @games.data.group_by do |row|
+      row[:away_team_id]
+    end[team_id_number]
+    away_by_season = if away.nil?
+      []
+    else
+      away.group_by do |row|
+        row[:season]
+      end
+    end
+    away_wins_hash = Hash.new(0)
+    away_by_season.each do |season, game_array|
+      away_wins_hash[season] = {win: 0, total: 0}
+      game_array.each do |game|
+        if game[:away_goals] > game[:home_goals]
+          away_wins_hash[season][:win] += 1
+        end
+        away_wins_hash[season][:total] += 1
+      end
+    end
+    home = @games.data.group_by do |row|
+      row[:home_team_id]
+    end[team_id_number]
+    home_by_season = if home.nil?
+      []
+    else
+      home.group_by do |row|
+        row[:season]
+      end
+    end
+    home_wins_hash = Hash.new(0)
+    home_by_season.each do |season, game_array|
+      home_wins_hash[season] = {win: 0, total: 0}
+      game_array.each do |game|
+        if game[:home_goals] > game[:away_goals]
+          home_wins_hash[season][:win] += 1
+        end
+        home_wins_hash[season][:total] += 1
+      end
+    end
+    combined = Hash.new(0)
+    away_wins_hash.each do |key, value|
+      combined[key] = {win: 0, total: 0}
+      combined[key][:win] = (home_wins_hash[key][:win] + value[:win])
+      combined[key][:total] = (home_wins_hash[key][:total] + value[:total])
+    end
+    best_season = combined.max_by do |k, v|
+      v[:win].to_f / v[:total].to_f
+    end
+    best_season[0]
+  end
+
+  def worst_season(team_id_number)
+    away = @games.data.group_by do |row|
+      row[:away_team_id]
+    end[team_id_number]
+    away_by_season = if away.nil?
+      []
+    else
+      away.group_by do |row|
+        row[:season]
+      end
+    end
+    away_wins_hash = Hash.new(0)
+    away_by_season.each do |season, game_array|
+      away_wins_hash[season] = {win: 0, total: 0}
+      game_array.each do |game|
+        if game[:away_goals] > game[:home_goals]
+          away_wins_hash[season][:win] += 1
+        end
+        away_wins_hash[season][:total] += 1
+      end
+    end
+    home = @games.data.group_by do |row|
+      row[:home_team_id]
+    end[team_id_number]
+    home_by_season = if home.nil?
+      []
+    else
+      home.group_by do |row|
+        row[:season]
+      end
+    end
+    home_wins_hash = Hash.new(0)
+    home_by_season.each do |season, game_array|
+      home_wins_hash[season] = {win: 0, total: 0}
+      game_array.each do |game|
+        if game[:home_goals] > game[:away_goals]
+          home_wins_hash[season][:win] += 1
+        end
+        home_wins_hash[season][:total] += 1
+      end
+    end
+    combined = Hash.new(0)
+    away_wins_hash.each do |key, value|
+      combined[key] = {win: 0, total: 0}
+      combined[key][:win] = (home_wins_hash[key][:win] + value[:win])
+      combined[key][:total] = (home_wins_hash[key][:total] + value[:total])
+    end
+    worst_season = combined.min_by do |k, v|
+      v[:win].to_f / v[:total].to_f
+    end
+    worst_season[0]
+  end
+
+  def average_win_percentage(team_id)
+    team_win_total = Hash.new(0)
+    team_win_total[team_id] = {win: 0, total: 0}
+    @game_teams.data.each do |game|
+      if game[:team_id] == team_id
+        if game[:result] == "WIN"
+          team_win_total[team_id][:win] += 1
+        end
+        team_win_total[team_id][:total] += 1
+      end
+    end
+    (team_win_total[team_id][:win].to_f / team_win_total[team_id][:total].to_f).round(2)
+  end
+
+  def most_goals_scored(team_id)
+    game_goals = []
+    @game_teams.data.each do |game|
+      if game[:team_id] == team_id
+        game_goals << game[:goals]
+      end
+    end
+    game_goals.max.to_i
+  end
+
+  def fewest_goals_scored(team_id)
+    game_goals = []
+    @game_teams.data.each do |game|
+      if game[:team_id] == team_id
+        game_goals << game[:goals]
+      end
+    end
+    game_goals.min.to_i
+  end
+
+  def favorite_opponent(team_id)
+    goals_by_teams = Hash.new(0)
+    @teams.data.each do |team|
+      goals_by_teams[team[:team_id]] = {win: 0, total: 0, name: team[:teamname]} if
+      team[:team_id] != team_id
+    end
+    games_for_team_id = []
+    @games.data.each do |game|
+      if (game[:home_team_id] || game[:away_team_id]) == team_id
+        games_for_team_id << game[:game_id]
+      end
+    end
+    games_for_team_id.each do |expected|
+      @game_teams.data.each do |game|
+        if (game[:game_id] == expected) && (game[:team_id] != team_id)
+          if game[:result] == "WIN"
+            goals_by_teams[game[:team_id]][:win] += 1
+          end
+          goals_by_teams[game[:team_id]][:total] += 1
+        end
+      end
+    end
+    goals_by_teams.each do |team, hash|
+      hash[:percentage] = if hash[:total] == 0
+        1
+      else
+        (hash[:win].to_f / hash[:total].to_f)
+      end
+    end
+    goals_by_teams.delete(nil)
+    fav_opponent = goals_by_teams.min_by do |team, hash|
+      hash[:percentage]
+    end
+    fav_opponent[1][:name]
+  end
+
+  def rival(team_id)
+    goals_by_teams = Hash.new(0)
+    @teams.data.each do |team|
+      goals_by_teams[team[:team_id]] = {win: 0, total: 0, name: team[:teamname]} if
+      team[:team_id] != team_id
+    end
+    games_for_team_id = []
+    @games.data.each do |game|
+      if (game[:home_team_id] || game[:away_team_id]) == team_id
+        games_for_team_id << game[:game_id]
+      end
+    end
+    games_for_team_id.each do |expected|
+      @game_teams.data.each do |game|
+        if (game[:game_id] == expected) && (game[:team_id] != team_id)
+          if game[:result] == "WIN"
+            goals_by_teams[game[:team_id]][:win] += 1
+          end
+          goals_by_teams[game[:team_id]][:total] += 1
+        end
+      end
+    end
+    goals_by_teams.each do |team, hash|
+      hash[:percentage] = if hash[:total] == 0
+        0
+      else
+        hash[:percentage] = (hash[:win].to_f / hash[:total].to_f)
+      end
+    end
+    goals_by_teams.delete(nil)
+    rival_opponent = goals_by_teams.max_by do |team, hash|
+      hash[:percentage]
+    end
+    rival_opponent[1][:name]
+  end
+  # End Team Statistics methods
+
+  # Start helpers
+  def game_ids_by_season(season_id)
+    game_id_array = []
+    @games.season.each_with_index do |season, index|
+      if season == season_id
+        game_id_array << @games.game_id[index]
+      end
+    end
+    game_id_array
+  end
+  # End helpers
 end
