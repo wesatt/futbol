@@ -1,10 +1,11 @@
 require "pry"
 require "rspec"
 require "csv"
-require "./lib/game_teams"
 require "simplecov"
 SimpleCov.start
 require_relative "../lib/stat_tracker"
+require_relative "../lib/games"
+require_relative "../lib/teams"
 require_relative "../lib/game_teams"
 
 RSpec.describe GameTeams do
@@ -41,5 +42,4 @@ RSpec.describe GameTeams do
     expect(@stat_tracker.game_teams.giveaways).to eq(@stat_tracker.stats_main[:game_teams][:giveaways])
     expect(@stat_tracker.game_teams.takeaways).to eq(@stat_tracker.stats_main[:game_teams][:takeaways])
   end
-
 end
