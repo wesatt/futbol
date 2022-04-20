@@ -37,10 +37,6 @@ class GameTeams
     @data = data
     @game_teams_rows = {}
 
-    # data.by_row!.each do |row|
-    #   team_hash = row.to_h
-    #   @game_teams_rows[team_hash[:team_id].to_i] = team_hash
-    # end
   end
 
   def shots
@@ -73,15 +69,5 @@ class GameTeams
     end
   end
 
-  def goals_array(team_id)
-    max_goals = {}
-    goals_by_id = []
-    data.by_row!.each do |row|
-      team_hash = row.to_h
-      max_goals[team_hash[:team_id]] = goals_by_id
-      if team_hash[:team_id] == team_id
-        goals_by_id << team_hash[:goals]
-      end
-    end
-  end
+
 end

@@ -10,13 +10,13 @@ require_relative "../lib/game_teams"
 
 RSpec.describe StatTracker do
   before :each do
-    game_path = "./data/test_games.csv"
-    team_path = "./data/test_teams.csv"
-    game_teams_path = "./data/test_game_teams.csv"
+    # game_path = "./data/test_games.csv"
+    # team_path = "./data/test_teams.csv"
+    # game_teams_path = "./data/test_game_teams.csv"
 
-    # game_path = "./data/games.csv"
-    # team_path = "./data/teams.csv"
-    # game_teams_path = "./data/game_teams.csv"
+    game_path = "./data/games.csv"
+    team_path = "./data/teams.csv"
+    game_teams_path = "./data/game_teams.csv"
 
     locations = {
       games: game_path,
@@ -110,6 +110,7 @@ RSpec.describe StatTracker do
   # End Game Statistics methods
 
   # Start Season Statistics methods
+
   it "has a winningest coach" do
     expect(@stat_tracker.winningest_coach("20122013")).to eq("Peter DeBoer")
   #   expect(@stat_tracker.winningest_coach("20132014")).to eq("Claude Julien")
@@ -150,9 +151,15 @@ RSpec.describe StatTracker do
 
   # Start Team methods
   xit "returns a hash for team info" do
-    expected = {team_id: "4", franchiseid: "16", teamname: "Chicago Fire", abbreviation: "CHI", stadium: "SeatGeek Stadium", link: "/api/v1/teams/4"}
+    expected = {
+      "team_id" => "18",
+      "franchise_id" => "34",
+      "team_name" => "Minnesota United FC",
+      "abbreviation" => "MIN",
+      "link" => "/api/v1/teams/18"
+    }
 
-    expect(@stat_tracker.team_info(4)).to eq(expected)
+    expect(@stat_tracker.team_info("18")).to eq(expected)
   end
 
   xit "shows the season with the highest win percentage for a team" do
@@ -161,8 +168,24 @@ RSpec.describe StatTracker do
     expect(@stat_tracker.best_season(30)).to eq("20122013")
   end
 
-  xit "will show the highest score of a particular team" do
-    expect(@stat_tracker.most_goals_scored(16)).to eq(4)
+  xit "will show the highest score of a particular team has scored in a game" do
+    expect(@stat_tracker.most_goals_scored("16")).to eq(4)
+  end
+
+  xit "will show the lowest goals scored for a particular team in a game" do
+    expect(@stat_tracker.fewest_goals_scored("16")).to eq(2)
+  end
+
+  xit 'will show a teams average win percentage of all games' do
+    expect(@stat_tracker.average_win_percentage(5)).to eq(0.33)
+  end
+
+  xit "shows a string of opponent that has the lowest win percentage versus given team" do
+    expect(@stat_tracker.favorite_opponent("18")).to eq "DC United"
+  end
+
+  it "shows a string of opponent that has the highest win percentage versus given team" do
+    expect(@stat_tracker.rival("18")).to eq("Houston Dash")#.or(eq("LA Galaxy"))
   end
   # end Team methods
 end

@@ -19,10 +19,6 @@ class Teams
 
     @data = data
 
-    # data.by_row!.each do |row|
-    #   team_hash = row.to_h
-    #   @teams[team_hash[:team_id].to_i] = team_hash
-    # end
   end
 
   def team_name_by_id(id)
@@ -39,9 +35,6 @@ class Teams
     @data.map { |row| row[:teamname] }
   end
 
-  def by_id(id)
-    @teams[id]
-  end
 
   def hash_data
     @data.map do |d|

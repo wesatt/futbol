@@ -86,26 +86,92 @@ class StatTracker
   end
 
   def most_goals_scored(team_id)
-    # @game_teams.goals_array(team_id).max
-    # max_goals = {}
-    # goals_by_id = []
-    # @game_teams.each do |row|
-    #   team_hash = row.to_h
-    #   max_goals[team_hash[:team_id]] = goals_by_id
-    #   if team_hash[:team_id] == team_id
-    #     goals_by_id << team_hash[:goals]
-    #   end
-    # end
-    # max_goals[team_id].max
-
-    # max_goals = Hash.new
-    # goals_by_id = Array.new
-    #
-    # game_teams.gt_by_id(team_id).find_all
-    #   max_goals[team_id] = goals_by_id
-    #   goals_by_id << game_teams.gt_by_id(team_id)[:goals]
-    #   max_goals[team_id].max.to_i
+    game_goals = Array.new
+    @game_teams.data.each do |game|
+      if game[:team_id] == team_id
+        game_goals << game[:goals]
+      end
+    end
+    # binding.pry
+    game_goals.max.to_i
   end
+
+  def fewest_goals_scored(team_id)
+    game_goals = Array.new
+    @game_teams.data.each do |game|
+      if game[:team_id] == team_id
+        game_goals << game[:goals]
+      end
+    end
+    # binding.pry
+    game_goals.min.to_i
+  end
+
+
+  def favorite_opponent(team_id)
+    goals_by_teams = Hash.new(0)
+    @teams.data.each do |team|
+      goals_by_teams[team[:team_id]] = {win: 0, total: 0, name: team[:teamname]} if
+      team[:team_id] != team_id
+    end
+    games_for_team_id = Array.new
+    @games.data.each do |game|
+      if (game[:home_team_id] || game[:away_team_id]) == team_id
+        games_for_team_id << game[:game_id]
+      end
+    end
+    games_for_team_id.each do |expected|
+
+      @game_teams.data.each do |game|
+        if (game[:game_id] == expected) && (game[:team_id] != team_id)
+          if game[:result] == "WIN"
+            goals_by_teams[game[:team_id]][:win] += 1
+          end
+          goals_by_teams[game[:team_id]][:total] += 1
+        end
+      end
+    end
+    goals_by_teams.each do |team, hash|
+      hash[:percentage] = (hash[:win].to_f/hash[:total].to_f)
+    end
+    fav_opponent = goals_by_teams.min_by do |team, hash|
+      hash[:percentage]
+    end
+    fav_opponent[1][:name]
+  end
+
+  def rival(team_id)
+    goals_by_teams = Hash.new(0)
+    @teams.data.each do |team|
+      goals_by_teams[team[:team_id]] = {win: 0, total: 0, name: team[:teamname]} if
+      team[:team_id] != team_id
+    end
+    games_for_team_id = Array.new
+    @games.data.each do |game|
+      if (game[:home_team_id] || game[:away_team_id]) == team_id
+        games_for_team_id << game[:game_id]
+      end
+    end
+    games_for_team_id.each do |expected|
+
+      @game_teams.data.each do |game|
+        if (game[:game_id] == expected) && (game[:team_id] != team_id)
+          if game[:result] == "WIN"
+            goals_by_teams[game[:team_id]][:win] += 1
+          end
+          goals_by_teams[game[:team_id]][:total] += 1
+        end
+      end
+    end
+    goals_by_teams.each do |team, hash|
+      hash[:percentage] = (hash[:win].to_f/hash[:total].to_f)
+    end
+    rival_opponent = goals_by_teams.max_by do |team, hash|
+      hash[:percentage]
+    end
+    rival_opponent[1][:name]
+  end
+  
 
   def most_accurate_team(season_arg)
     game_id_array = []
@@ -174,8 +240,35 @@ class StatTracker
   end
 
   def team_info(team_id)
-    teams.by_id(team_id)
+    teams_by_group = @teams.data.group_by do |team|
+      team[:team_id]
+    end
+    team = teams_by_group[team_id]
+    team[0].delete(:stadium)
+    team[0]["team_id"] = team[0].delete(:team_id)
+    team[0]["franchise_id"] = team[0].delete(:franchiseid)
+    team[0]["team_name"] = team[0].delete(:teamname)
+    team[0]["abbreviation"] = team[0].delete(:abbreviation)
+    team[0]["link"] = team[0].delete(:link)
+    # binding.pry
+    team[0]
   end
+
+  def average_win_percentage(team_id)
+    team_win_total = Hash.new(0)
+    team_win_total[team_id] = {win: 0, total: 0}
+    @game_teams.data.each do |game|
+      if game[:team_id].to_i == team_id
+        if game[:result] == "WIN"
+          team_win_total[team_id][:win] += 1
+        end
+        team_win_total[team_id][:total] += 1
+      end
+    end
+    (team_win_total[team_id][:win].to_f / team_win_total[team_id][:total].to_f).round(2)
+  end
+
+
 
   # Start Game Statistics methods
   def highest_total_score
