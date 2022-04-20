@@ -106,25 +106,6 @@ class StatTracker
     # binding.pry
     game_goals.min.to_i
   end
-    # @game_teams.goals_array(team_id).max
-    # max_goals = {}
-    # goals_by_id = []
-    # @game_teams.each do |row|
-    #   team_hash = row.to_h
-    #   max_goals[team_hash[:team_id]] = goals_by_id
-    #   if team_hash[:team_id] == team_id
-    #     goals_by_id << team_hash[:goals]
-    #   end
-    # end
-    # max_goals[team_id].max
-
-    # max_goals = Hash.new
-    # goals_by_id = Array.new
-    #
-    # game_teams.gt_by_id(team_id).find_all
-    #   max_goals[team_id] = goals_by_id
-    #   goals_by_id << game_teams.gt_by_id(team_id)[:goals]
-    #   max_goals[team_id].max.to_i
 
   #   def winningest_coach(season_arg)
   #     coach_by_season = Hash.new(0)
