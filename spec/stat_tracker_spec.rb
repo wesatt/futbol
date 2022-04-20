@@ -172,12 +172,12 @@ RSpec.describe StatTracker do
     expect(@stat_tracker.average_win_percentage(5)).to eq(0.33)
   end
 
-  it "shows a string of opponent that has the lowest win percentage versus given team" do
+  xit "shows a string of opponent that has the lowest win percentage versus given team" do
     expect(@stat_tracker.favorite_opponent("18")).to eq "DC United"
   end
 
   it "shows a string of opponent that has the highest win percentage versus given team" do
-    expect(@stat_tracker.favorite_opponent("18")).to eq(("Houston Dash").or(eq("LA Galaxy"))
+    expect(@stat_tracker.rival("18")).to eq("Houston Dash")#.or(eq("LA Galaxy"))
   end
   # end Team methods
 end
