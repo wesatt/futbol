@@ -94,7 +94,7 @@ class StatTracker
     team_data.each do |id_key, value_hash|
       @teams.team_id.each_with_index do |team_id, index|
         if team_id == id_key
-              require 'pry';binding.pry
+              # require 'pry';binding.pry
           team_average_goals[@teams.teamname[index]] = (value_hash[:goals].to_f / value_hash[:total_games].to_f).round(2)
         end
       end

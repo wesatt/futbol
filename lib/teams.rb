@@ -1,30 +1,22 @@
-require 'pry'
 class Teams
-  attr_reader :team_id,
-              :franchiseid,
-              :teamname,
-              :abbreviation,
-              :stadium,
-              :link
+  attr_reader :data
 
   def initialize(data)
-    @team_id = data[:team_id]
-    @franchiseid = data[:franchiseid]
-    @teamname = data[:teamname]
-    @abbreviation = data[:abbreviation]
-    @stadium = data[:stadium]
-    @link = data[:link]
-    @teams = Hash.new
     @data = data
+  end
 
-    data.by_row!.each do |row|
-      team_hash = row.to_h
-      @teams[team_hash[:team_id].to_i] = team_hash
+  def team_name_by_id(id)
+    @data.find do |hash|
+      return hash[:teamname] if hash[:team_id] == id
     end
   end
 
-  def by_id(id)
-    @teams[id]
+  def team_id
+    @data.map { |row| row[:team_id] }
+  end
+
+  def teamname
+    @data.map { |row| row[:teamname] }
   end
 
   def hash_data

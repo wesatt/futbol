@@ -1,11 +1,12 @@
 require "pry"
 require "rspec"
 require "csv"
-require "./lib/teams"
 require "simplecov"
 SimpleCov.start
 require_relative "../lib/stat_tracker"
+require_relative "../lib/games"
 require_relative "../lib/teams"
+require_relative "../lib/game_teams"
 
 RSpec.describe Teams do
   before :each do
@@ -30,9 +31,5 @@ RSpec.describe Teams do
     expect(@stat_tracker.teams.abbreviation).to eq(@stat_tracker.stats_main[:teams][:abbreviation])
     expect(@stat_tracker.teams.stadium).to eq(@stat_tracker.stats_main[:teams][:stadium])
     expect(@stat_tracker.teams.link).to eq(@stat_tracker.stats_main[:teams][:link])
-  end
-
-  it 'can sort the hashes by team_ids' do
-
   end
 end

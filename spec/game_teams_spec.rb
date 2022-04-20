@@ -1,10 +1,11 @@
 require "pry"
 require "rspec"
 require "csv"
-require "./lib/game_teams"
 require "simplecov"
 SimpleCov.start
 require_relative "../lib/stat_tracker"
+require_relative "../lib/games"
+require_relative "../lib/teams"
 require_relative "../lib/game_teams"
 
 RSpec.describe GameTeams do
