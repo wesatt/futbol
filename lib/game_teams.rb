@@ -39,6 +39,18 @@ class GameTeams
 
   end
 
+  def shots
+    @data.map { |row| row[:shots] }
+  end
+
+  def goals
+    @data.map { |row| row[:goals] }
+  end
+
+  def team_id
+    @data.map { |row| row[:team_id] }
+  end
+
   def game_id
     @data.map { |row| row[:game_id] }
   end

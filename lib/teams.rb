@@ -21,6 +21,12 @@ class Teams
 
   end
 
+  def team_name_by_id(id)
+    @data.find do |hash|
+      return hash[:teamname] if hash[:team_id] == id
+    end 
+  end
+
   def team_id
     @data.map { |row| row[:team_id] }
   end
