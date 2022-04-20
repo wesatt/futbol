@@ -160,8 +160,12 @@ RSpec.describe StatTracker do
     expect(@stat_tracker.best_season(30)).to eq("20122013")
   end
 
-  xit "will show the highest score of a particular team has scored in a game" do
-    expect(@stat_tracker.most_goals_scored(16)).to eq(4)
+  it "will show the highest score of a particular team has scored in a game" do
+    expect(@stat_tracker.most_goals_scored("16")).to eq(4)
+  end
+
+  it "will show the lowest goals scored for a particular team in a game" do
+    expect(@stat_tracker.fewest_goals_scored("16")).to eq(2)
   end
 
   it 'will show a teams average win percentage of all games' do
