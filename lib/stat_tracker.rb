@@ -26,9 +26,9 @@ class StatTracker
   end
 
 
-    def team_info(team_id)
-      teams.by_id(team_id)
-    end
+  def team_info(team_id)
+    teams.by_id(team_id)
+  end
 
   # Start Game Statistics methods
   def highest_total_score
@@ -70,53 +70,15 @@ class StatTracker
   end
 
   def best_offense
-  game_teams = @game_teams.hash_data
-  team_data = {}
-  game_teams.each do |game|
-    if !team_data[game[:team_id]].nil?
-      incrementer = team_data[game[:team_id]][:goals].to_i + game[:goals].to_i
-      incrementer2 = team_data[game[:team_id]][:total_games].to_i + 1
-      team_data[game[:team_id]] = {goals: incrementer, total_games: incrementer2}
-    else
-      incrementer = game[:goals].to_i
-      team_data[game[:team_id]] = {goals: incrementer, total_games: 1}
-    end
-  end
-  team_average_goals = Hash.new(0)
-  team_data.each do |id_key, value_hash|
-    @teams.team_id.each_with_index do |team_id, index|
-      if team_id == id_key
-        team_average_goals[@teams.teamname[index]] = (value_hash[:goals].to_f / value_hash[:total_games].to_f).round(2)
-      end
-    end
-  end
-  best_team = team_average_goals.max_by { |k, v| v }
-  best_team[0]
+    average_goals = team_average_goals
+    best_team = average_goals.max_by { |k, v| v }
+    best_team[0]
   end
 
   def worst_offense
-  game_teams = @game_teams.hash_data
-  team_data = {}
-  game_teams.each do |game|
-    if !team_data[game[:team_id]].nil?
-      incrementer = team_data[game[:team_id]][:goals].to_i + game[:goals].to_i
-      incrementer2 = team_data[game[:team_id]][:total_games].to_i + 1
-      team_data[game[:team_id]] = {goals: incrementer, total_games: incrementer2}
-    else
-      incrementer = game[:goals].to_i
-      team_data[game[:team_id]] = {goals: incrementer, total_games: 1}
-    end
-  end
-  team_average_goals = Hash.new(0)
-  team_data.each do |id_key, value_hash|
-    @teams.team_id.each_with_index do |team_id, index|
-      if team_id == id_key
-        team_average_goals[@teams.teamname[index]] = (value_hash[:goals].to_f / value_hash[:total_games].to_f).round(2)
-      end
-    end
-  end
-  best_team = team_average_goals.min_by { |k, v| v }
-  best_team[0]
+    average_goals = team_average_goals
+    best_team = average_goals.min_by { |k, v| v }
+    best_team[0]
   end
 
   def highest_scoring_visitor
@@ -124,20 +86,15 @@ class StatTracker
     team_data = {}
     game_teams.each do |game|
       if game[:hoa] == "away"
-        if !team_data[game[:team_id]].nil?
-          away_goals_incrementer = team_data[game[:team_id]][:goals].to_i + game[:goals].to_i
-          away_goals_incrementer2 = team_data[game[:team_id]][:total_games].to_i + 1
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: away_goals_incrementer2}
-        else
-          away_goals_incrementer = game[:goals].to_i
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: 1}
-        end
+        team_data_builder(team_data, game)
       end
     end
+    average_goals = team_average_goals
     team_average_goals = Hash.new(0)
     team_data.each do |id_key, value_hash|
       @teams.team_id.each_with_index do |team_id, index|
         if team_id == id_key
+              require 'pry';binding.pry
           team_average_goals[@teams.teamname[index]] = (value_hash[:goals].to_f / value_hash[:total_games].to_f).round(2)
         end
       end
@@ -151,14 +108,7 @@ class StatTracker
     team_data = {}
     game_teams.each do |game|
       if game[:hoa] == "away"
-        if !team_data[game[:team_id]].nil?
-          away_goals_incrementer = team_data[game[:team_id]][:goals].to_i + game[:goals].to_i
-          away_goals_incrementer2 = team_data[game[:team_id]][:total_games].to_i + 1
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: away_goals_incrementer2}
-        else
-          away_goals_incrementer = game[:goals].to_i
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: 1}
-        end
+        team_data_builder(team_data, game)
       end
     end
     team_average_goals = Hash.new(0)
@@ -178,14 +128,7 @@ class StatTracker
     team_data = {}
     game_teams.each do |game|
       if game[:hoa] == "home"
-        if !team_data[game[:team_id]].nil?
-          away_goals_incrementer = team_data[game[:team_id]][:goals].to_i + game[:goals].to_i
-          away_goals_incrementer2 = team_data[game[:team_id]][:total_games].to_i + 1
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: away_goals_incrementer2}
-        else
-          away_goals_incrementer = game[:goals].to_i
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: 1}
-        end
+        team_data_builder(team_data, game)
       end
     end
     team_average_goals = Hash.new(0)
@@ -205,14 +148,7 @@ class StatTracker
     team_data = {}
     game_teams.each do |game|
       if game[:hoa] == "home"
-        if !team_data[game[:team_id]].nil?
-          away_goals_incrementer = team_data[game[:team_id]][:goals].to_i + game[:goals].to_i
-          away_goals_incrementer2 = team_data[game[:team_id]][:total_games].to_i + 1
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: away_goals_incrementer2}
-        else
-          away_goals_incrementer = game[:goals].to_i
-          team_data[game[:team_id]] = {goals: away_goals_incrementer, total_games: 1}
-        end
+        team_data_builder(team_data, game)
       end
     end
     team_average_goals = Hash.new(0)
@@ -225,5 +161,40 @@ class StatTracker
     end
     best_team = team_average_goals.min_by { |k, v| v }
     best_team[0]
+  end
+
+# Helper Methods
+
+  def offense_helper
+    game_teams = @game_teams.hash_data
+    team_data = {}
+    game_teams.each do |game|
+      team_data_builder(team_data, game)
+    end
+    team_data
+  end
+
+  def team_average_goals
+    team_data = offense_helper
+    team_average_goals = Hash.new(0)
+    team_data.each do |id_key, value_hash|
+      @teams.team_id.each_with_index do |team_id, index|
+        if team_id == id_key
+          team_average_goals[@teams.teamname[index]] = (value_hash[:goals].to_f / value_hash[:total_games].to_f).round(2)
+        end
+      end
+    end
+    team_average_goals
+  end
+end
+
+def team_data_builder(team_data, game)
+  if !team_data[game[:team_id]].nil?
+    incrementer = team_data[game[:team_id]][:goals].to_i + game[:goals].to_i
+    incrementer2 = team_data[game[:team_id]][:total_games].to_i + 1
+    team_data[game[:team_id]] = {goals: incrementer, total_games: incrementer2}
+  else
+    incrementer = game[:goals].to_i
+    team_data[game[:team_id]] = {goals: incrementer, total_games: 1}
   end
 end
