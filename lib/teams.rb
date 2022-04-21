@@ -1,3 +1,4 @@
+
 class Teams
   attr_reader :data
 
@@ -17,11 +18,5 @@ class Teams
 
   def teamname
     @data.map { |row| row[:teamname] }
-  end
-
-  def hash_data
-    @data.map do |d|
-      d.to_hash
-    end
   end
 end
