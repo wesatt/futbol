@@ -47,12 +47,4 @@ RSpec.describe Teams do
 
     expect(@stat_tracker.teams.teamname).to eq(expected)
   end
-
-  it 'shows an arrays with hashes for all of the teams data by row' do
-    @teams = Teams.new(@stat_tracker.teams)
-
-    expect(@stat_tracker.teams.hash_data[0]).to eq( {
-      :team_id=>"1", :franchiseid=>"23", :teamname=>"Atlanta United", :abbreviation=>"ATL", :stadium=>"Mercedes-Benz Stadium", :link=>"/api/v1/teams/1"
-      })
-  end
 end

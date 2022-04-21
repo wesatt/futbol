@@ -1,3 +1,4 @@
+
 class GameTeams
   attr_reader :data
 
@@ -23,11 +24,5 @@ class GameTeams
 
   def head_coach
     @data.map { |row| row[:head_coach] }
-  end
-
-  def hash_data
-    @data.map do |d|
-      d.to_hash
-    end
   end
 end
