@@ -88,23 +88,4 @@ RSpec.describe GameTeams do
       "10", "8", "7", "8", "5", "10", "7", "7", "7", "6", "13", "10", "6", "6"]
     expect(@stat_tracker.game_teams.shots).to eq(expect)
   end
-
-  it "shows an arrays with hashes for all of the teams data by row" do
-    expect = {game_id: "2012020001",
-              team_id: "5",
-              hoa: "away",
-              result: "WIN",
-              settled_in: "REG",
-              head_coach: "Dan Bylsma",
-              goals: "3",
-              shots: "6",
-              tackles: "37",
-              pim: "10",
-              powerplayopportunities: "3",
-              powerplaygoals: "2",
-              faceoffwinpercentage: "56.5",
-              giveaways: "8",
-              takeaways: "10"}
-    expect(@stat_tracker.game_teams.hash_data[0]).to eq(expect)
-  end
 end

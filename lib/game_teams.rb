@@ -1,4 +1,3 @@
-
 class GameTeams
   attr_reader :data
 
