@@ -1,4 +1,3 @@
-
 class Teams
   attr_reader :data
 

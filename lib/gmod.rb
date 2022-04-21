@@ -1,7 +1,6 @@
-require_relative './stat_tracker'
+require_relative "./stat_tracker"
 
 module GamesMod
-
   def highest_total_score
     @games.total_scores.max
   end

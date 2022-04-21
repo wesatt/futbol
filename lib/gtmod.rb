@@ -1,7 +1,6 @@
-require_relative './stat_tracker'
+require_relative "./stat_tracker"
 
 module GameTeamsMod
-
   def fewest_goals_scored(team_id)
     game_goals = []
     @game_teams.data.each do |game|
